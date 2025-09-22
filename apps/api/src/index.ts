@@ -1,4 +1,4 @@
-// import { serve } from "@hono/node-server"
+import { serve } from "@hono/node-server"
 import { Hono } from "hono"
 import { setCookie } from "hono/cookie"
 import { sign } from "hono/jwt"
@@ -43,15 +43,15 @@ app.get("/auth/signin", async (c) => {
   return c.json({ ok: true })
 })
 
-// serve(
-//   {
-//     fetch: app.fetch,
-//     port: 3002,
-//   },
-//   (info) => {
-//     console.log(`Server is running on http://localhost:${info.port}`)
-//   },
-// )
+serve(
+  {
+    fetch: app.fetch,
+    port: 3002,
+  },
+  (info) => {
+    console.log(`Server is running on http://localhost:${info.port}`)
+  },
+)
 
 // import { Hono } from "hono"
 
@@ -65,5 +65,4 @@ app.get("/auth/signin", async (c) => {
 // app.get("/", (c) => {
 //   return c.text(welcomeStrings.join("\n\n"))
 // })
-
 export default app

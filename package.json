@@ -10,6 +10,7 @@
     "check:format:fix": "prettier --write .",
     "clean": "sh scripts/clean.sh",
     "dev": "turbo dev",
+    "dev2": "bun dev",
     "start": "turbo start",
     "update": "pnpx npm-check-updates --upgrade"
   },
