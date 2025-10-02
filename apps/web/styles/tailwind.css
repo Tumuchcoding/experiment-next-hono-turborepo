@@ -1,0 +1,126 @@
+/* Order matters */
+@import "tailwindcss";
+@import "@nattui/tailwind-tokenless/styles/10/index.css";
+
+@layer base {
+  .d {
+    border: 1px dashed red;
+  }
+
+  html {
+    font-size: 10px;
+  }
+
+  body {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--color-gray-2);
+    color: var(--color-gray-11);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    letter-spacing: -0.02em;
+    line-height: 1.5;
+  }
+
+  h1 {
+    font-size: 5.6rem;
+  }
+
+  h2 {
+    font-size: 3.6rem;
+  }
+
+  h3 {
+    font-size: 3rem;
+  }
+
+  h4 {
+    font-size: 2rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-gray-12);
+    font-family: var(--font-display);
+    font-feature-settings: "ss04";
+    font-weight: 500;
+  }
+
+  p {
+    font-size: 1.6rem;
+    hyphens: auto;
+    word-break: break-word;
+  }
+
+  button {
+    font-weight: 500;
+    outline-color: var(--color-primary-9);
+    outline-offset: 2px;
+    outline-style: solid;
+    outline-width: 0;
+
+    &:focus-visible {
+      outline-width: 2px;
+    }
+  }
+
+  b,
+  strong {
+    font-weight: 500;
+  }
+
+  a {
+    font-family: var(--font-sans);
+    outline-color: var(--color-primary-9);
+    outline-offset: 2px;
+    outline-style: solid;
+    outline-width: 0;
+
+    &:focus-visible {
+      outline-width: 2px;
+    }
+  }
+
+  code {
+    font-family: var(--font-mono);
+  }
+
+  /*
+    Enhance heading quality and legibility
+  */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+
+  /*
+    Avoid a short single word on the last line
+  */
+  p {
+    text-wrap: pretty;
+  }
+
+  /*
+    Avoid text overflows
+  */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    overflow-wrap: break-word;
+  }
+}
+
+@layer components {
+}

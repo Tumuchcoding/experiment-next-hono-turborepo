@@ -1,18 +1,36 @@
 {
   "name": "api",
-  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js"
+    "check:format": "prettier --check .",
+    "check:format:fix": "prettier --write .",
+    "check:lint": "eslint .",
+    "check:lint:fix": "eslint --fix .",
+    "check:type": "tsc --noEmit src/**/*.ts",
+    "check:type:watch": "tsc --noEmit --watch",
+    "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
+    "db:introspect": "drizzle-kit introspect --config=drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=drizzle.config.ts",
+    "db:push": "drizzle-kit push --config=drizzle.config.ts",
+    "db:studio": "drizzle-kit studio --config=drizzle.config.ts --verbose",
+    "dev": "bun run --hot src/app.ts",
+    "update": "bun update --interactive"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.3",
-    "hono": "^4.9.8"
+    "argon2": "^0.44.0",
+    "drizzle-orm": "^0.44.5",
+    "hono": "^4.9.9",
+    "postgres": "^3.4.7"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "tsx": "^4.7.1",
-    "typescript": "catalog:"
+    "@eslint/js": "^9.36.0",
+    "@types/bun": "^1.2.22",
+    "drizzle-kit": "^0.31.5",
+    "eslint": "catalog:",
+    "eslint-plugin-perfectionist": "catalog:",
+    "eslint-plugin-unicorn": "catalog:",
+    "eslint-plugin-unused-imports": "catalog:",
+    "globals": "^16.4.0",
+    "typescript": "catalog:",
+    "typescript-eslint": "^8.44.1"
   }
 }
