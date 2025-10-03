@@ -12,10 +12,11 @@ if (isDevelopment) {
   // Custom logger: show only the completed response line
   app.use(loggerMiddleware())
 }
-const ALLOWED_ORIGINS = new Set([
+// eslint-disable-next-line unicorn/prefer-set-has
+const ALLOWED_ORIGINS = [
   'http://localhost:3001',
   'https://experiment-next-hono-turborepo-web-ivory.vercel.app/',
-])
+]
 
 // CORS for all routes
 app.use('*', cors({
@@ -24,7 +25,7 @@ app.use('*', cors({
   credentials: true, 
   exposeHeaders: ['Content-Length'],
   maxAge: 86_400,
-  origin: (origin) => (origin && ALLOWED_ORIGINS.has(origin) ? origin : ''),
+  origin: (origin) => (origin && ALLOWED_ORIGINS.includes(origin) ? origin : ''),
 }))
 
 app.route("/", routeMain)
