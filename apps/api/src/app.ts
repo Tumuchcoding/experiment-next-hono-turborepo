@@ -16,7 +16,8 @@ if (isDevelopment) {
 const ALLOWED_ORIGINS = [
   'http://localhost:3001',
   'https://experiment-next-hono-turborepo-web-ivory.vercel.app/',
-]
+  'https://experiment-next-hono-turborepo-web.vercel.app/api/users',
+  'https://experiment-next-hono-turborepo-web.vercel.app/api/auth/signin/credential']
 
 // CORS for all routes
 app.use('*', cors({
