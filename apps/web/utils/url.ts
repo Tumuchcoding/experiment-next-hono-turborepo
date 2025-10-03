@@ -1,18 +1,6 @@
-export const isDevelopment = process.env.NODE_ENV === "development"
-
-export const BASE_URL_WEB_HASHMAP = {
-  DEVELOPMENT: "http://localhost:3001",
-  PRODUCTION: "https://experiment-next-hono-turborepo-web-ivory.vercel.app/",
-}
-
-export const BASE_URL_API_HASHMAP = {
-  DEVELOPMENT: "http://localhost:3002",
-  PRODUCTION: "https://experiment-next-hono-turborepo-api-three.vercel.app/",
-}
-
 export const BASE_URL = {
-  API: BASE_URL_API_HASHMAP[isDevelopment ? "DEVELOPMENT" : "PRODUCTION"],
-  WEB: BASE_URL_WEB_HASHMAP[isDevelopment ? "DEVELOPMENT" : "PRODUCTION"],
+  API: process.env.NEXT_PUBLIC_API_URL,
+  WEB: process.env.NEXT_PUBLIC_WEB_URL,
 }
 
 export const API = {
