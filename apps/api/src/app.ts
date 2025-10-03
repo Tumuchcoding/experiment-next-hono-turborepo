@@ -20,17 +20,22 @@ const ALLOWED_ORIGINS = [
   'https://experiment-next-hono-turborepo-web.vercel.app/api/auth/signin/credential']
 
 // CORS for all routes
-app.use('*', cors({
-  allowHeaders: ['Content-Type', 'Authorization'],
-  allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  credentials: true, 
-  exposeHeaders: ['Content-Length'],
-  maxAge: 86_400,
-  origin: (origin) => (origin && ALLOWED_ORIGINS.includes(origin) ? origin : ''),
-}))
+app.use(
+  '*',
+  cors({
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    credentials: true,        // set true only if you use cookies/HTTP auth from the browser
+    exposeHeaders: ['Content-Length'],
+    maxAge: 86_400,
+    // echo back the caller's Origin only if it's allowed
+    origin: (origin) => (origin && ALLOWED_ORIGINS.includes(origin) ? origin : ''),
+  })
+)
 
-app.route("/", routeMain)
-app.route("/auth", routeAuth)
+// your routes
+app.route('/', routeMain)
+app.route('/auth', routeAuth)
 
 export default {
   fetch: app.fetch,
