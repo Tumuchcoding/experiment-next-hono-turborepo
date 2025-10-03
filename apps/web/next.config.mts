@@ -2,7 +2,7 @@ import type { NextConfig } from "next"
 
 // const API_URL = process.env.NEXT_PUBLIC_API_URL
 const isProd = process.env.NODE_ENV === 'production';
-//change to your deployed api url
+//change to your deployed api url, env on vercel
 const API_URL =
   (isProd ? process.env.NEXT_PUBLIC_API_URL : process.env.NEXT_LOCAL_API_URL);
 
