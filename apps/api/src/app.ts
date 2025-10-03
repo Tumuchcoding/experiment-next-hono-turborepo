@@ -25,7 +25,7 @@ const allowOrigin = (origin?: string) => {
   try {
     const { host, protocol } = new URL(origin)
     if (
-      host === 'localhost:3001' ||
+      host === 'localhost:3001' ||  host === 'https://experiment-next-hono-turborepo-web.vercel.app/api/auth/signin/credential' ||   host === 'https://experiment-next-hono-turborepo-web.vercel.app/api/users'||
       host.endsWith('.vercel.app')
       // ||          // <-- keep if you use Vercel preview/prod
       // host.endsWith('your-frontend.com')       // <-- your custom domain
