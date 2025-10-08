@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {  type Context, Hono } from "hono"
 import { cors } from "hono/cors"
-import { loggerMiddleware } from "./middleware/logger.middleware"
-import { routeAuth } from "./routes/auth/auth.route"
-import { routeMain } from "./routes/main/main.route"
+import { loggerMiddleware } from "./middleware/logger.middleware.js"
+import { routeAuth } from "./routes/auth/auth.route.js"
+import { routeMain } from "./routes/main/main.route.js"
 
 export const isDevelopment = process.env.NODE_ENV === "development"
 const WEB_ORIGIN = process.env.NEXT_PUBLIC_WEB_URL ?? process.env.WEB_ORIGIN ?? ""

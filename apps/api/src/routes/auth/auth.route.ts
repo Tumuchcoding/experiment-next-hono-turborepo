@@ -1,8 +1,8 @@
 import { Hono } from "hono"
-import { routeSigninCredential } from "./signin-credential.route"
-import { routeSignout } from "./signout.route"
-import { routeSignupCredential } from "./signup-credential.route"
-import { routeVerify } from "./verify.route"
+import { routeSigninCredential } from "./signin-credential.route.js"
+import { routeSignout } from "./signout.route.js"
+import { routeSignupCredential } from "./signup-credential.route.js"
+import { routeVerify } from "./verify.route.js"
 
 const routeAuth = new Hono()
 

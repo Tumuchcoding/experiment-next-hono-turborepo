@@ -3,12 +3,12 @@ import { zValidator } from "@hono/zod-validator"
 import { verify } from "argon2"
 import { and, eq } from "drizzle-orm"
 import { Hono } from "hono"
-import { db } from "../../utils/db/db.utils"
-import { ACCOUNT, USER } from "../../utils/db/schema/user.schema"
-import { jsonError, normalizeEmail } from "../../utils/http"
-import { HTTP_STATUS_CODE } from "../../utils/http-status-code"
-import { setSession, signSession } from "../../utils/session.util"
-import { EmptyOk, SignInBody } from "./schemas"
+import { db } from "../../utils/db/db.utils.js"
+import { ACCOUNT, USER } from "../../utils/db/schema/user.schema.js"
+import { HTTP_STATUS_CODE } from "../../utils/http-status-code.js"
+import { jsonError, normalizeEmail } from "../../utils/http.js"
+import { setSession, signSession } from "../../utils/session.util.js"
+import { EmptyOk, SignInBody } from "./schemas.js"
 
 // Optional: a precomputed harmless argon2 hash to mitigate user-enumeration timing.
 // You can generate it once (argon2 of the string "invalid").

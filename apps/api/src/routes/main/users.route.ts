@@ -3,9 +3,9 @@
 import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
 import { z } from "zod"
-import { db } from "../../utils/db/db.utils"
-import { USER } from "../../utils/db/schema/user.schema"
-import { HTTP_STATUS_CODE } from "../../utils/http-status-code"
+import { db } from "../../utils/db/db.utils.js"
+import { USER } from "../../utils/db/schema/user.schema.js"
+import { HTTP_STATUS_CODE } from "../../utils/http-status-code.js"
 
 // Example: narrow what the client will “see” back:
 const UserDTO = z.object({

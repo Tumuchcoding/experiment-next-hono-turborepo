@@ -3,12 +3,12 @@ import { zValidator } from "@hono/zod-validator"
 import { hash } from "argon2"
 import { eq } from "drizzle-orm"
 import { Hono } from "hono"
-import { db } from "../../utils/db/db.utils"
-import { ACCOUNT, PROFILE, USER } from "../../utils/db/schema/user.schema"
-import { jsonError, normalizeEmail } from "../../utils/http"
-import { HTTP_STATUS_CODE } from "../../utils/http-status-code"
-import { setSession, signSession } from "../../utils/session.util"
-import { EmptyOk, SignUpBody } from "./schemas"
+import { db } from "../../utils/db/db.utils.js"
+import { ACCOUNT, PROFILE, USER } from "../../utils/db/schema/user.schema.js"
+import { HTTP_STATUS_CODE } from "../../utils/http-status-code.js"
+import { jsonError, normalizeEmail } from "../../utils/http.js"
+import { setSession, signSession } from "../../utils/session.util.js"
+import { EmptyOk, SignUpBody } from "./schemas.js"
 
 export const routeSignupCredential = new Hono()
   .post(

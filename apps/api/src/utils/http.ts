@@ -1,7 +1,7 @@
 // api/utils/http.ts
 import type { Context } from "hono"
 import type { ContentfulStatusCode } from "hono/utils/http-status"
-import { HTTP_STATUS_CODE } from "./http-status-code"
+import { HTTP_STATUS_CODE } from "./http-status-code.js"
 
 export type ApiError = { error: string }
 

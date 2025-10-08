@@ -2,7 +2,7 @@ import type { Context } from "hono"
 import type { JWTPayload } from "hono/utils/jwt/types"
 import { deleteCookie, getCookie, setCookie } from "hono/cookie"
 import { sign, verify } from "hono/jwt"
-import { JWT_SECRET } from "./constant.util"
+import { JWT_SECRET } from "./constant.util.js"
 
 export const EXPIRATION_TIME_IN_SECONDS = 31_536_000 // 1 year
 export const JWT_ALGORITHM = "HS256"
