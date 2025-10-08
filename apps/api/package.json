@@ -1,5 +1,7 @@
 {
   "name": "api",
+  "type": "module",
+
   "scripts": {
     "check:format": "prettier --check .",
     "check:format:fix": "prettier --write .",
