@@ -1,18 +1,20 @@
 import type { Context, Next } from "hono"
-import { HTTP_STATUS_CODE } from "../utils/http-status-code"
-import { getSession, verifySession } from "../utils/session.util"
+import { HTTP_STATUS_CODE } from "../utils/http-status-code.js"
+import { getSession, verifySession } from "../utils/session.util.js"
 
-export async function verifyMiddleware(context: Context, next: Next) {
+export async function verifyMiddleware(
+  context: Context,
+  next: Next
+): Promise<Response | void> {
+  const session = getSession(context)
+
+  if (!session) {
+    return context.json({}, HTTP_STATUS_CODE["401_UNAUTHORIZED"])
+  }
+
   try {
-    const session = getSession(context)
-
-    if (!session) {
-      return context.json({}, HTTP_STATUS_CODE["401_UNAUTHORIZED"])
-    }
-
     await verifySession(session)
-
-    await next()
+    return next()
   } catch {
     return context.json({}, HTTP_STATUS_CODE["401_UNAUTHORIZED"])
   }
