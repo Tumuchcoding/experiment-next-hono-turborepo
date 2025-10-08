@@ -3,38 +3,34 @@
 import { Button, type ButtonProps } from "@nattui/react-components"
 import { useRouter } from "next/navigation"
 import { type MouseEvent, useState } from "react"
-import { API } from "@/utils/url"
+import { api } from "@/utils/api-client"
 
 function ButtonSignOut(props: ButtonProps) {
-  const { variant = "secondary" } = props
-
+  const { variant = "secondary", ...rest } = props
   const [isLoading, setIsLoading] = useState(false)
-
   const router = useRouter()
 
-  async function onSubmit(event: MouseEvent<HTMLButtonElement>) {
-    event.preventDefault()
+  async function onSubmit(e: MouseEvent<HTMLButtonElement>) {
+    e.preventDefault()
     setIsLoading(true)
     try {
-      const response = await fetch(API.AUTH.SIGNOUT, {
-        method: "POST",
-      })
-      if (!response.ok) {
-        throw new Error("Failed to sign out.")
-      }
-      router.push("/signin")
+      const res = await api["auth"].signout.$post() // typed RPC call
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      router.replace("/signin")
       router.refresh()
-    } catch {
+    } catch (error) {
+      console.error(error)
       setIsLoading(false)
     }
   }
 
   return (
     <Button
+      isDisabled={isLoading}
       isLoading={isLoading}
       onClick={onSubmit}
       variant={variant}
-      {...props}
+      {...rest}
     >
       Sign out
     </Button>

@@ -1,40 +1,40 @@
+/* eslint-disable unicorn/no-null */
+// web/src/components/Users.tsx
 "use client"
 
 import { useEffect, useState } from "react"
-import { API } from "@/utils/url"
+import { api } from "@/utils/api-client"
 
-interface User {
-  createdAt: string
-  email: string
-  emailVerified: boolean
-  id: string
-  name: string
-  role: string
-  updatedAt: string
-}
+type UsersPayload = Awaited<ReturnType<typeof fetchUsersOnce>>
 
 export function Users() {
-  const [users, setUsers] = useState<User[]>([])
+  const [data, setData] = useState<null | UsersPayload>(null)
+  const [error, setError] = useState<null | string>(null)
 
   useEffect(() => {
-    fetch(API.USERS)
-      .then((response) => response.json())
-      .then((data) => setUsers(data.users))
+    fetchUsersOnce().then(setData).catch((error_) => setError(String(error_)))
   }, [])
 
+  if (error) return <div className="text-red-600">{error}</div>
+  if (!data) return <div>Loading…</div>
+const users = 'users' in data ? data.users : [];
+
   return (
-    <div className="flex flex-col gap-y-16">
-      {users.map((user) => (
-        <div className="flex flex-col font-mono" key={user.id}>
-          <p className="text-14">id: {user.id}</p>
-          <p className="text-14">name: {user.name}</p>
-          <p className="text-14">email: {user.email}</p>
-          <p className="text-14">emailVerified: {user.emailVerified}</p>
-          <p className="text-14">role: {user.role}</p>
-          <p className="text-14">createdAt: {user.createdAt}</p>
-          <p className="text-14">updatedAt: {user.updatedAt}</p>
+    <div className="flex flex-col gap-y-6">
+      {users.map((u) => (
+        <div className="flex flex-col font-mono" key={u.id}>
+          <p>id: {u.id}</p>
+          <p>name: {u.name}</p>
+          <p>email: {u.email}</p>
+          <p>createdAt: {u.createdAt}</p>
         </div>
       ))}
     </div>
   )
+}
+
+async function fetchUsersOnce() {
+  const res = await api["users"].$get({ query: { limit: "20" } })
+  if (!res.ok) throw new Error("Failed to load users")
+  return res.json() // -> { users: [...], nextCursor: string | null }
 }

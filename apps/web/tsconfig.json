@@ -1,5 +1,7 @@
+// web/tsconfig.json
 {
   "compilerOptions": {
+    "baseUrl": ".",                   // 👈 REQUIRED for "paths" to work
     "allowJs": true,
     "esModuleInterop": true,
     "incremental": true,
@@ -10,18 +12,17 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "paths": {
-      "@/*": ["./*"]
+      "@api/*": ["../api/src/*"],
+      "@/*": ["./*"]   // add back if you want your local alias too
     },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "plugins": [{ "name": "next" }],
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2017"
+    "target": "ES2020",
+    "verbatimModuleSyntax": true
   },
   "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "references": [{ "path": "../api" }]
 }

@@ -1,9 +1,7 @@
 import { Hono } from "hono"
 
-const routeTest = new Hono()
+// const routeTest = new Hono()
 
-routeTest.get("/", async (context) => {
-  return context.json({ data: "Hello Hono!" })
-})
+export const routeTest = new Hono().get("/", (c) => c.json({ data: "Hello Hono!" } as const))
 
-export { routeTest }
+// export { routeTest }

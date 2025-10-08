@@ -1,4 +1,4 @@
-import Link, { LinkProps } from "next/link"
+import Link, { type LinkProps } from "next/link"
 import ButtonSignOut from "@/components/button-sign-out"
 
 interface NavbarProps {

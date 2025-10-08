@@ -1,54 +1,68 @@
+import { zValidator } from "@hono/zod-validator"
+// api/routes/auth/signin-credential.route.ts
 import { verify } from "argon2"
 import { and, eq } from "drizzle-orm"
 import { Hono } from "hono"
 import { db } from "../../utils/db/db.utils"
 import { ACCOUNT, USER } from "../../utils/db/schema/user.schema"
+import { jsonError, normalizeEmail } from "../../utils/http"
 import { HTTP_STATUS_CODE } from "../../utils/http-status-code"
 import { setSession, signSession } from "../../utils/session.util"
+import { EmptyOk, SignInBody } from "./schemas"
 
-const routeSigninCredential = new Hono()
+// Optional: a precomputed harmless argon2 hash to mitigate user-enumeration timing.
+// You can generate it once (argon2 of the string "invalid").
+const DUMMY_HASH =
+  "$argon2id$v=19$m=65536,t=3,p=4$fV0pQXjH1Wm2nA1Kk7bq3Q$7b9f1nYF8v8mZp1H4QW2g9rpr4y2Cw5S8m2y1DBoX1U" // example
 
-routeSigninCredential.post("/", async (context) => {
-  try {
-    const { email, password } = await context.req.json()
+export const routeSigninCredential = new Hono()
+  .post(
+    "/",
+    zValidator("json", SignInBody),
+    async (c) => {
+      try {
+        const { email: rawEmail, password } = c.req.valid("json")
+        const email = normalizeEmail(rawEmail)
 
-    // Check if user with this email exists
-    const [existingUser] = await db
-      .select({
-        hashedPassword: ACCOUNT.password,
-        id: USER.id,
-        name: USER.name,
-      })
-      .from(USER)
-      .innerJoin(
-        ACCOUNT,
-        and(eq(ACCOUNT.userId, USER.id), eq(ACCOUNT.provider, "credentials")),
-      )
-      .where(eq(USER.email, email))
-      .limit(1)
+        // Lookup
+        const [existingUser] = await db
+          .select({
+            email: USER.email,
+            hashedPassword: ACCOUNT.password,
+            id: USER.id,
+            name: USER.name,
+          })
+          .from(USER)
+          .innerJoin(
+            ACCOUNT,
+            and(eq(ACCOUNT.userId, USER.id), eq(ACCOUNT.provider, "credentials")),
+          )
+          .where(eq(USER.email, email))
+          .limit(1)
 
-    if (!existingUser) {
-      return context.json({}, HTTP_STATUS_CODE["401_UNAUTHORIZED"])
-    }
+        // Timing mitigation: always run verify against *some* hash
+        const hashed = existingUser?.hashedPassword ?? DUMMY_HASH
+        const ok = await verify(hashed, password).catch(() => false)
 
-    const hashedPassword = existingUser.hashedPassword ?? ""
-    const isPasswordCorrect = await verify(hashedPassword, password)
+        if (!existingUser || !ok || !existingUser.hashedPassword) {
+          // Same response for "not found" and "bad password"
+          return jsonError(c, HTTP_STATUS_CODE["401_UNAUTHORIZED"], "Invalid credentials")
+        }
 
-    if (!isPasswordCorrect) {
-      return context.json({}, HTTP_STATUS_CODE["401_UNAUTHORIZED"])
-    }
+        const session = await signSession({
+          email: existingUser.email,
+          id: existingUser.id,
+          name: existingUser.name,
+        })
+        setSession(c, session)
 
-    const session = await signSession({
-      email,
-      id: existingUser.id,
-      name: existingUser.name,
-    })
-    setSession(context, session)
-    return context.json({}, HTTP_STATUS_CODE["200_OK"])
-  } catch (error) {
-    console.error(error)
-    return context.json({}, HTTP_STATUS_CODE["500_INTERNAL_SERVER_ERROR"])
-  }
-})
-
-export { routeSigninCredential }
+        // Typed empty-ok response
+        const body: EmptyOk = { ok: true }
+        // (Clients infer this shape via RPC types.)
+        return c.json(body, HTTP_STATUS_CODE["200_OK"])
+      } catch (error) {
+        console.error(error)
+        return jsonError(c, HTTP_STATUS_CODE["500_INTERNAL_SERVER_ERROR"])
+      }
+    },
+  )

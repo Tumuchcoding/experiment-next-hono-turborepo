@@ -16,6 +16,7 @@
     "update": "bun update --interactive"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.7.3",
     "argon2": "^0.44.0",
     "drizzle-orm": "^0.44.5",
     "hono": "^4.9.9",

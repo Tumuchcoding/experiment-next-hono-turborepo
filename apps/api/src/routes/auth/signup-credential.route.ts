@@ -1,63 +1,60 @@
+// api/routes/auth/signup-credential.route.ts
+import { zValidator } from "@hono/zod-validator"
 import { hash } from "argon2"
 import { eq } from "drizzle-orm"
 import { Hono } from "hono"
 import { db } from "../../utils/db/db.utils"
 import { ACCOUNT, PROFILE, USER } from "../../utils/db/schema/user.schema"
+import { jsonError, normalizeEmail } from "../../utils/http"
 import { HTTP_STATUS_CODE } from "../../utils/http-status-code"
 import { setSession, signSession } from "../../utils/session.util"
+import { EmptyOk, SignUpBody } from "./schemas"
 
-const routeSignupCredential = new Hono()
+export const routeSignupCredential = new Hono()
+  .post(
+    "/",
+    zValidator("json", SignUpBody),
+    async (c) => {
+      try {
+        const { email: rawEmail, name, password } = c.req.valid("json")
+        const email = normalizeEmail(rawEmail)
 
-routeSignupCredential.post("/", async (context) => {
-  try {
-    const { email, name, password } = await context.req.json()
+        // Unique check
+        const [existing] = await db.select().from(USER).where(eq(USER.email, email)).limit(1)
+        if (existing) {
+          return jsonError(c, HTTP_STATUS_CODE["409_CONFLICT"], "Email already in use")
+        }
 
-    // Check if user with this email already exists
-    const [existingUser] = await db
-      .select()
-      .from(USER)
-      .where(eq(USER.email, email))
-      .limit(1)
+        const hashedPassword = await hash(password)
 
-    if (existingUser) {
-      return context.json({}, HTTP_STATUS_CODE["409_CONFLICT"])
-    }
+        await db.transaction(async (trx) => {
+          const [newUser] = await trx.insert(USER).values({ email, name }).returning()
 
-    const hashedPassword = await hash(password)
+          // Ensure provider field is set to "credentials" in your schema default or here:
+          const accountPromise = trx.insert(ACCOUNT).values({
+            password: hashedPassword,
+            provider: "credentials",
+            userId: newUser.id,
+          })
 
-    await db.transaction(async (transaction) => {
-      // Create new user
-      const [newUser] = await transaction
-        .insert(USER)
-        .values({ email, name })
-        .returning()
+          const profilePromise = trx.insert(PROFILE).values({ userId: newUser.id })
 
-      // Create account for the user
-      const account = transaction.insert(ACCOUNT).values({
-        password: hashedPassword,
-        userId: newUser.id,
-      })
+          await Promise.all([accountPromise, profilePromise])
 
-      // Create profile for the user
-      const profile = transaction.insert(PROFILE).values({
-        userId: newUser.id,
-      })
+          const session = await signSession({
+            email,
+            id: newUser.id,
+            name,
+          })
+          setSession(c, session)
+        })
 
-      await Promise.all([account, profile])
-
-      const session = await signSession({
-        email,
-        id: newUser.id,
-        name,
-      })
-      setSession(context, session)
-    })
-
-    return context.json({}, HTTP_STATUS_CODE["201_CREATED"])
-  } catch (error) {
-    console.error(error)
-    return context.json({}, HTTP_STATUS_CODE["500_INTERNAL_SERVER_ERROR"])
-  }
-})
-
-export { routeSignupCredential }
+        const body: EmptyOk = { ok: true }
+        return c.json(body, HTTP_STATUS_CODE["201_CREATED"])
+      } catch (error) {
+        console.error(error)
+        // If your DB throws a unique-constraint error, you can map it to 409 here as well.
+        return jsonError(c, HTTP_STATUS_CODE["500_INTERNAL_SERVER_ERROR"])
+      }
+    },
+  )
