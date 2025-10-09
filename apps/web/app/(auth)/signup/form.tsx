@@ -105,7 +105,6 @@ export default function SignUpForm() {
         <p className="text-red-600 mb-8 text-12" role="alert">
           {error}
         </p>
-      // eslint-disable-next-line unicorn/no-null
       ) : null}
 
       <Button isDisabled={isLoading} isLoading={isLoading} type="submit">
