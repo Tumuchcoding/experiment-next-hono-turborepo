@@ -1,4 +1,4 @@
-// "server-only"
+"server-only"
 
 import type { AppType } from "@api/app"
 import { hc } from "hono/client"
