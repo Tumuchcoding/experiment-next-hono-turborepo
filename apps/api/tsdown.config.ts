@@ -14,5 +14,5 @@ export default defineConfig({
   dts: true,
   entry: "src/app.ts",
   format: "esm",
-  noExternal: "db",
+  noExternal: [/^.*$/],
 });
