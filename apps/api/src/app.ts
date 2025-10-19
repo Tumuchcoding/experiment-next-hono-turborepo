@@ -9,12 +9,11 @@ import { AuthController } from "@/orpc/controllers/auth.controller";
 
 const app = new Hono();
 
-const allowedOrigins = (
-  process.env.API_ALLOWED_ORIGINS ?? "http://localhost:3001"
-)
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins =
+  "https://experiment-next-hono-turborepo-api-three.vercel.app/"
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 
 const defaultOrigin = allowedOrigins[0] ?? "http://localhost:3001";
 
