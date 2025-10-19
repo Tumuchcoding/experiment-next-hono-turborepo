@@ -9,10 +9,21 @@ import { AuthController } from "./orpc/controllers/auth.controller";
 
 const app = new Hono();
 
-const allowedOrigins = (Bun.env.API_ALLOWED_ORIGINS ?? "http://localhost:3001")
+const globalTargets = globalThis as {
+  Bun?: { env?: Record<string, string | undefined> };
+  process?: { env?: Record<string, string | undefined> };
+};
+
+const getEnv = (key: string): string | undefined => {
+  const fromBun = globalTargets.Bun?.env?.[key];
+  if (fromBun !== undefined) return fromBun;
+  return globalTargets.process?.env?.[key];
+};
+
+const allowedOrigins = (getEnv("API_ALLOWED_ORIGINS") ?? "http://localhost:3001")
   .split(",")
   .map((origin) => origin.trim())
-  .filter(Boolean);
+  .filter((origin) => origin.length > 0);
 
 const defaultOrigin = allowedOrigins[0] ?? "http://localhost:3001";
 
@@ -22,7 +33,7 @@ app.use(
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "OPTIONS"],
     credentials: true,
-    origin: (origin) => {
+    origin: (origin: string | undefined) => {
       if (!origin) return defaultOrigin;
       return allowedOrigins.includes(origin) ? origin : defaultOrigin;
     },
