@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".", // <-- add this
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "noEmit": true,
+    "noEmit": true, // bundler does the real work
     "paths": {
       "@/*": ["./src/*", "../../packages/db/src/*"]
     },
