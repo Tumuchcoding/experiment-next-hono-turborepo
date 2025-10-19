@@ -8,7 +8,7 @@
     "check:type": "tsc",
     "dev": "bun run --hot src/app.ts",
     "compile": "bun build --compile --minify --sourcemap --bytecode ./src/app.ts --outfile server",
-    "start": "node dist/src/app.js"
+    "start": "node dist/app.js"
   },
   "dependencies": {
     "@orpc/contract": "^1.9.4",
