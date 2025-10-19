@@ -3,10 +3,11 @@
   "type": "module",
   "exports": "./src/index.ts",
   "scripts": {
-    "build": "bun run check:type && tsdown",
+    "build": "tsc && tsc-alias",
     "check:type": "tsc",
     "dev": "bun run --hot src/app.ts",
-    "start": "bun run dev"
+    "compile": "bun build --compile --minify --sourcemap --bytecode ./api/index.ts --outfile server",
+    "start": "node dist/src/app.js"
   },
   "dependencies": {
     "@orpc/contract": "^1.9.4",
@@ -16,6 +17,7 @@
     "db": "workspace:*",
     "hono": "^4.9.9",
     "reflect-metadata": "^0.2.2",
+    "tsc-alias": "^1.8.16",
     "zod": "^4.1.12"
   },
   "devDependencies": {

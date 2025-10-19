@@ -1,15 +1,22 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
+    "composite": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "target": "ES2022",
+    "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*", "../../packages/db/src/*"]
     },
+    "rootDir": "./",
     "skipLibCheck": true,
-    "strict": true
-  }
+    "strict": true,
+    "target": "ESNext",
+    "types": ["node"],
+    "verbatimModuleSyntax": true
+  },
+  "include": ["./src/**/*.ts"]
 }
