@@ -9,12 +9,12 @@ export interface AppContext {
 export const schemaAuthSignupCredential = z.object({
   email: z.string().email(),
   name: z.string().min(1),
-  password: z.string().min(8),
+  password: z.string().min(6),
 })
 
 export const schemaAuthSigninCredential = z.object({
   email: z.string().email(),
-  password: z.string().min(1),
+  password: z.string().min(6),
 })
 
 export const schemaAuthVerify = z.object({

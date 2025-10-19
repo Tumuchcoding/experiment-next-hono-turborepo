@@ -9,6 +9,11 @@ type ApiClientContext = InferClientContext<ApiClient>
 
 const rpcLink = new RPCLink<ApiClientContext>({
   url: () => `${BASE_URL.API}/rpc`,
+  fetch: (request, init, _options, _path, _input) =>
+    fetch(request, {
+      ...init,
+      credentials: "include",
+    }),
 })
 
 export const client: ApiClient = createORPCClient<ApiClient>(rpcLink)
