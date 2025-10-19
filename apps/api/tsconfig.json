@@ -8,7 +8,7 @@
     "moduleResolution": "bundler",
     "outDir": "./dist",
     "paths": {
-      "@/*": ["./*", "../../packages/db/src/*"]
+      "@/*": ["./*", "../../../packages/db/src/*"]
     },
     "rootDir": "./src",
     "skipLibCheck": true,
@@ -17,5 +17,5 @@
     "types": ["node"],
     "verbatimModuleSyntax": true
   },
-  "include": ["./src/**/*.ts"]
+  "include": ["./src/*.ts"]
 }
