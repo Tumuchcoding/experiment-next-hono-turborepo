@@ -1,6 +1,6 @@
 import { Controller, Implement } from "@outscope/orpc-hono";
 import { db, USER } from "db";
-import { contract } from "../contract";
+import { contract } from "../contract.js";
 
 @Controller()
 export class AppController {

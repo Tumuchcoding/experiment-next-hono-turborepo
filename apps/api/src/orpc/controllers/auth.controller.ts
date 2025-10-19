@@ -10,14 +10,14 @@ import {
   deleteSession,
   setSession,
   verifySession,
-} from "../../utils/session.util";
+} from "../../utils/session.util.js";
 import {
   type AppContext,
   contract,
   type schemaAuthSigninCredential,
   type schemaAuthSignupCredential,
   type schemaAuthVerify,
-} from "../contract";
+} from "../contract.js";
 
 type SignupInput = z.infer<typeof schemaAuthSignupCredential>;
 type SigninInput = z.infer<typeof schemaAuthSigninCredential>;
