@@ -1,28 +1,46 @@
-// web/tsconfig.json
 {
   "compilerOptions": {
-    "baseUrl": ".",                   // 👈 REQUIRED for "paths" to work
     "allowJs": true,
     "esModuleInterop": true,
     "incremental": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "bundler",
     "noEmit": true,
     "paths": {
-      "@api/*": ["../api/src/*"],
-      "@/*": ["./*"]   // add back if you want your local alias too
+      "@/*": [
+        "./*",
+        "../../packages/db/src/*",
+        "../api/src/*"
+      ]
     },
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2020",
-    "verbatimModuleSyntax": true
+    "target": "ES2017"
   },
-  "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "references": [{ "path": "../api" }]
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "**/*.mts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/dev/types/**/*.ts",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    ".next\\dev/types/**/*.ts",
+    ".next\\dev/types/**/*.ts"
+  ]
 }

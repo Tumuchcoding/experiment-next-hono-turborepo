@@ -1,45 +1,15 @@
-// api/tsconfig.json
-// {
-//   "compilerOptions": {
-//     "composite": true,
-//     "declaration": true,
-//     "emitDeclarationOnly": false,
-//     "esModuleInterop": true,
-//     "isolatedModules": true,
-//     "jsx": "react-jsx",
-//     "jsxImportSource": "hono/jsx",
-//     "lib": ["esnext"],
-//     "module": "ESNext",
-//     "moduleResolution": "bundler",   // 👈 lowercase
-//     "skipLibCheck": true,
-//     "strict": true,
-//     "target": "ES2020",
-//     "verbatimModuleSyntax": true
-//   },
-//   "include": ["**/*.ts", "**/*.tsx"],
-//   "exclude": ["node_modules"]
-// }
-
-// {
-//   "compilerOptions": {
-//     "allowSyntheticDefaultImports": true,
-//     "esModuleInterop": true,
-//     "jsx": "react-jsx",
-//     "jsxImportSource": "hono/jsx",
-//     "strict": true
-//   }
-// }
-
 {
   "compilerOptions": {
-    "composite": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
-    "module": "NodeNext",
-    "outDir": "./dist",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "target": "ES2022",
+    "paths": {
+      "@/*": ["./src/*", "../../packages/db/src/*"]
+    },
     "skipLibCheck": true,
-    "strict": true,
-    "target": "ESNext"
-  },
-  "exclude": ["node_modules"]
+    "strict": true
+  }
 }

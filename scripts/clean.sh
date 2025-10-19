@@ -33,9 +33,37 @@ remove_if_exists() {
     echo
 }
 
-remove_if_exists "node_modules"
+# Function to remove files if they exist
+remove_files_if_exist() {
+    local file_name="$1"
+    local files_found
+    local count=0
+
+    echo "🔍 Looking for ${file_name} files..."
+
+    # Find all instances of the file
+    files_found=$(find . -name "$file_name" -type f 2>/dev/null)
+
+    if [ -z "$files_found" ]; then
+        echo "  ✅ No ${file_name} files found"
+    else
+        # Remove each file and count them
+        while IFS= read -r file; do
+            echo "  🗑️  Removing: ${file}"
+            rm -f "$file"
+            ((count++))
+        done <<< "$files_found"
+
+        echo "  ✅ Removed ${count} ${file_name} file$([ $count -eq 1 ] && echo "" || echo "s")"
+    fi
+    echo
+}
+
 remove_if_exists ".next"
 remove_if_exists ".turbo"
 remove_if_exists "dist"
+remove_if_exists "node_modules"
+
+remove_files_if_exist "bun.lock"
 
 echo "🎉 Cleanup completed successfully!"

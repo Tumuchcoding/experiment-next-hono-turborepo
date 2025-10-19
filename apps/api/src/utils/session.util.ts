@@ -1,10 +1,10 @@
 import type { Context } from "hono"
-import type { JWTPayload } from "hono/utils/jwt/types"
 import { deleteCookie, getCookie, setCookie } from "hono/cookie"
 import { sign, verify } from "hono/jwt"
-import { JWT_SECRET } from "./constant.util.js"
+import type { JWTPayload } from "hono/utils/jwt/types"
+import { JWT_SECRET } from "@/utils/constant.util"
 
-export const EXPIRATION_TIME_IN_SECONDS = 31_536_000 // 1 year
+export const EXPIRATION_TIME_IN_MILLISECONDS = 31_536_000_000 // 1 year
 export const JWT_ALGORITHM = "HS256"
 
 export function deleteSession(context: Context): void {
@@ -15,10 +15,21 @@ export function getSession(context: Context): string | undefined {
   return getCookie(context, "session")
 }
 
-export function setSession(context: Context, session: string): void {
+interface SetSessionParams {
+  context: Context
+  id: number
+  now: Date
+}
+
+export async function setSession(params: SetSessionParams): Promise<void> {
+  const { context, id, now } = params
+  const session = await signSession({ id, now })
+  const expirationDate = new Date(
+    now.getTime() + EXPIRATION_TIME_IN_MILLISECONDS,
+  )
   setCookie(context, "session", session, {
+    expires: expirationDate,
     httpOnly: true,
-    maxAge: EXPIRATION_TIME_IN_SECONDS,
     path: "/",
     priority: "medium",
     sameSite: "lax",
@@ -26,12 +37,27 @@ export function setSession(context: Context, session: string): void {
   })
 }
 
-export async function signSession(payload: JWTPayload): Promise<string> {
-  const token = await sign(payload, JWT_SECRET, JWT_ALGORITHM)
-  return token
+interface SignSessionParams extends JWTPayload {
+  id: number
+  now: Date
+}
+
+export async function signSession(params: SignSessionParams): Promise<string> {
+  const { id, now } = params
+  const expiresAt = Math.floor(
+    (now.getTime() + EXPIRATION_TIME_IN_MILLISECONDS) / 1000,
+  )
+  const issuedAt = Math.floor(now.getTime() / 1000)
+  const payload = {
+    exp: expiresAt,
+    iat: issuedAt,
+    iss: "experiment-next-hono-turborepo",
+    sub: id,
+    ...params,
+  }
+  return sign(payload, JWT_SECRET, JWT_ALGORITHM)
 }
 
 export async function verifySession(session: string): Promise<JWTPayload> {
-  const payload = await verify(session, JWT_SECRET, JWT_ALGORITHM)
-  return payload
+  return verify(session, JWT_SECRET, JWT_ALGORITHM)
 }

@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "strict": true,
-    "skipLibCheck": true,
-    "moduleResolution": "Bundler",
-    "target": "ES2020",
-    "verbatimModuleSyntax": true
-  }
-}

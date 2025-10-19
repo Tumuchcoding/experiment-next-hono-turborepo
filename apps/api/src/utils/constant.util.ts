@@ -1,2 +1,9 @@
-export const JWT_SECRET =
-  "e533164577b61bbba9b125a77937170f748029f6e58167eb9fa3a633eef06627"
+const jwtSecret = process.env.JWT_SECRET
+
+if (!jwtSecret || jwtSecret.trim() === "") {
+  throw new Error(
+    "JWT_SECRET environment variable is required but not set. Please set a valid JWT_SECRET in your environment variables.",
+  )
+}
+
+export const JWT_SECRET = jwtSecret

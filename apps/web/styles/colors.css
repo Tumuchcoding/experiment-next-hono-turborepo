@@ -1,5 +1,5 @@
 @theme {
-  --color-*: initial;
+  --color-\*: initial;
 
   /* Sage */
   --color-gray-1: oklch(99.23% 0.0025 160.4);

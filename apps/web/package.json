@@ -1,39 +1,30 @@
 {
   "name": "web",
   "scripts": {
-    "build": "next build --turbopack",
-    "check": "pnpm check:format && pnpm check:lint",
-    "check:fix": "pnpm check:format:fix && pnpm check:lint:fix",
-    "check:format": "prettier --check .",
-    "check:format:fix": "prettier --write .",
-    "check:lint": "eslint .",
-    "check:lint:fix": "eslint --fix .",
+    "build": "next build",
     "check:type": "next typegen && tsc --noEmit",
-    "dev": "next dev --port 3001 --turbopack",
-    "start": "next start --port 3001",
-    "update": "bun update --interactive"
+    "check:type:watch": "next typegen && tsc --noEmit --watch",
+    "dev": "next dev --port 3001",
+    "start": "next start --port 3001"
   },
   "dependencies": {
-    "@nattui/react-components": "^0.0.6",
+    "@nattui/react-components": "^0.0.16",
     "@nattui/tailwind-tokenless": "^0.0.2",
-    "next": "^15.6.0-canary.34",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "@orpc/contract": "^1.9.4",
+    "@orpc/client": "^1.9.4",
+    "api": "workspace:*",
+    "db": "workspace:*",
+    "next": "^16.0.0-canary.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
-    "@tailwindcss/postcss": "^4.1.13",
-    "@types/node": "^24.5.2",
-    "@types/react": "^19.1.14",
-    "@types/react-dom": "^19.1.9",
-    "eslint": "catalog:",
-    "eslint-config-next": "^15.5.4",
-    "eslint-plugin-better-tailwindcss": "^3.7.9",
-    "eslint-plugin-perfectionist": "catalog:",
-    "eslint-plugin-react-you-might-not-need-an-effect": "^0.5.3",
-    "eslint-plugin-unicorn": "catalog:",
-    "eslint-plugin-unused-imports": "catalog:",
-    "tailwindcss": "^4.1.13",
+    "@tailwindcss/postcss": "^4.1.14",
+    "@types/node": "^24.7.1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "tailwindcss": "^4.1.14",
     "typescript": "catalog:"
   }
 }

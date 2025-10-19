@@ -1,40 +1,40 @@
-/* eslint-disable unicorn/no-null */
-// web/src/components/Users.tsx
 "use client"
 
+import type { User } from "db"
 import { useEffect, useState } from "react"
-import { api } from "@/utils/api-client"
-
-type UsersPayload = Awaited<ReturnType<typeof fetchUsersOnce>>
+import { client } from "@/utils/client"
 
 export function Users() {
-  const [data, setData] = useState<null | UsersPayload>(null)
-  const [error, setError] = useState<null | string>(null)
+  const [users, setUsers] = useState<User[]>([])
 
   useEffect(() => {
-    fetchUsersOnce().then(setData).catch((error_) => setError(String(error_)))
+    async function getUsers() {
+      try {
+        const users = await client.users()
+        setUsers(users)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    getUsers()
   }, [])
 
-  if (error) return <div className="text-red-600">{error}</div>
-  if (!data) return <div>Loading…</div>
-const users = 'users' in data ? data.users : [];
-
   return (
-    <div className="flex flex-col gap-y-6">
-      {users.map((u) => (
-        <div className="flex flex-col font-mono" key={u.id}>
-          <p>id: {u.id}</p>
-          <p>name: {u.name}</p>
-          <p>email: {u.email}</p>
-          <p>createdAt: {u.createdAt}</p>
+    <div className="flex flex-col gap-y-16">
+      {users.map((user) => (
+        <div className="flex flex-col font-mono" key={user.id}>
+          <p className="text-12">id: {user.id}</p>
+          <p className="text-12">name: {user.name}</p>
+          <p className="text-12">email: {user.email}</p>
+          <p className="text-12">
+            emailVerified: {user.emailVerified.toString()}
+          </p>
+          <p className="text-12">role: {user.role}</p>
+          <p className="text-12">createdAt: {user.createdAt.toString()}</p>
+          <p className="text-12">updatedAt: {user.updatedAt.toString()}</p>
         </div>
       ))}
     </div>
   )
-}
-
-async function fetchUsersOnce() {
-  const res = await api["users"].$get({ query: { limit: "20" } })
-  if (!res.ok) throw new Error("Failed to load users")
-  return res.json() // -> { users: [...], nextCursor: string | null }
 }
