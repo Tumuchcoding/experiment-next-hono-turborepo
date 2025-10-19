@@ -1,0 +1,16 @@
+{
+  "framework": null,
+  "installCommand": "bun install",
+  "buildCommand": "bun run build",
+  "functions": {
+    "dist/app.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/app.js"
+    }
+  ]
+}

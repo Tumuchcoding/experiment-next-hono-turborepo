@@ -1,6 +1,7 @@
 {
   "name": "api",
   "type": "module",
+  "main": "./dist/app.js",
   "exports": "./src/index.ts",
   "scripts": {
     "build": "bun run check:type && tsdown",
