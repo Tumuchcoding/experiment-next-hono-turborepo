@@ -10,7 +10,7 @@ import { defineConfig } from "tsdown";
  */
 // tsdown.config.ts
 export default defineConfig({
-  clean: false,
+  clean: true,
   dts: true,
   entry: "src/app.ts",
   format: "esm",

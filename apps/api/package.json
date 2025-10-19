@@ -4,10 +4,11 @@
   "main": "./dist/app.js",
   "exports": "./src/index.ts",
   "scripts": {
-    "build": "tsc && tsc-alias",
-    "check:type": "tsc",
+    "build": "bunx tsdown && node ./scripts/generate-vercel-handler.mjs",
+    "check:type": "tsc --noEmit",
     "dev": "bun run --hot src/app.ts",
     "compile": "bun build --compile --minify --sourcemap --bytecode ./src/app.ts --outfile server",
+    "postinstall": "node ./scripts/fix-orpc-hono-imports.mjs",
     "start": "node dist/app.js"
   },
   "dependencies": {
