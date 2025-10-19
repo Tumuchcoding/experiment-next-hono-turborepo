@@ -6,7 +6,7 @@
     "build": "bun run check:type && tsdown",
     "check:type": "tsc",
     "dev": "bun run --hot src/app.ts",
-    "start": "bun run dev"
+    "start": "node dist/app.js"
   },
   "dependencies": {
     "@orpc/contract": "^1.9.4",
