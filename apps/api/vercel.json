@@ -1,16 +1,10 @@
 {
-  "framework": null,
-  "installCommand": "bun install",
-  "buildCommand": "bun run build",
-  "functions": {
-    "dist/app.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "routes": [
+  "outputDirectory": "./dist",
+  "redirects": [{ "destination": "/rpc", "permanent": false, "source": "/" }],
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "dist/app.js"
+      "destination": "/rpc",
+      "source": "/rpc/(.*)"
     }
   ]
 }
