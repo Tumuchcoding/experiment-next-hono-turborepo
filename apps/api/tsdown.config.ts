@@ -9,15 +9,10 @@ import { defineConfig } from "tsdown";
  *   Override -> dist
  */
 // tsdown.config.ts
-
 export default defineConfig({
-  alias: { "@": "./src" }, // <-- rewrite @/* to ./src/*
-  clean: true,
+  clean: false,
   dts: true,
-  // Build your serverless/edge entry under src/api/, not just src/app.ts
-  // so Vercel will find /dist/api/* after build.
-  entry: ["src/app.ts"], // <-- important
+  entry: "src/app.ts",
   format: "esm",
-  noExternal: ["db"], // keep bundling workspace "db"
-  outDir: "dist", // <-- ensure dist output
+  noExternal: "db",
 });

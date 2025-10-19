@@ -3,9 +3,9 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { implement, ORPCHono } from "@outscope/orpc-hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { type AppContext, contract } from "@/orpc/contract";
-import { AppController } from "@/orpc/controllers/app.controller";
-import { AuthController } from "@/orpc/controllers/auth.controller";
+import { type AppContext, contract } from "./orpc/contract";
+import { AppController } from "./orpc/controllers/app.controller";
+import { AuthController } from "./orpc/controllers/auth.controller";
 
 const app = new Hono();
 
