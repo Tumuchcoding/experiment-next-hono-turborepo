@@ -1,4 +1,4 @@
-import { defineConfig } from "tsdown"
+import { defineConfig } from "tsdown";
 
 /**
  * On Vercel
@@ -8,10 +8,11 @@ import { defineConfig } from "tsdown"
  *   Output Directory
  *   Override -> dist
  */
+// tsdown.config.ts
 export default defineConfig({
   clean: false,
   dts: true,
   entry: "src/app.ts",
   format: "esm",
-  noExternal: "db",
-})
+  noExternal: [/^.*$/],
+});

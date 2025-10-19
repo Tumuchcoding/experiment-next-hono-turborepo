@@ -1,0 +1,10 @@
+{
+  "outputDirectory": "./dist",
+  "redirects": [{ "destination": "/rpc", "permanent": false, "source": "/" }],
+  "rewrites": [
+    {
+      "destination": "/rpc",
+      "source": "/rpc/(.*)"
+    }
+  ]
+}
