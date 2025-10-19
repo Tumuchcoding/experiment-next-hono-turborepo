@@ -9,7 +9,18 @@ import { AuthController } from "@/orpc/controllers/auth.controller"
 
 const app = new Hono()
 
-const allowedOrigins = (Bun.env.API_ALLOWED_ORIGINS ?? "http://localhost:3001")
+const getEnv = (key: string): string | undefined => {
+  const valueFromBun = typeof Bun !== "undefined" ? Bun.env[key] : undefined
+  if (valueFromBun !== undefined) return valueFromBun
+
+  const nodeEnv =
+    (globalThis as { process?: { env?: Record<string, string | undefined> } }).process
+      ?.env ?? undefined
+
+  return nodeEnv?.[key]
+}
+
+const allowedOrigins = (getEnv("API_ALLOWED_ORIGINS") ?? "http://localhost:3001")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean)
