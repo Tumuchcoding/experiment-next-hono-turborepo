@@ -3,9 +3,9 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { implement, ORPCHono } from "@outscope/orpc-hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { type AppContext, contract } from "./orpc/contract";
-import { AppController } from "./orpc/controllers/app.controller";
-import { AuthController } from "./orpc/controllers/auth.controller";
+import { type AppContext, contract } from "./orpc/contract.js";
+import { AppController } from "./orpc/controllers/app.controller.js";
+import { AuthController } from "./orpc/controllers/auth.controller.js";
 
 const app = new Hono();
 
@@ -20,7 +20,9 @@ const getEnv = (key: string): string | undefined => {
   return globalTargets.process?.env?.[key];
 };
 
-const allowedOrigins = (getEnv("API_ALLOWED_ORIGINS") ?? "http://localhost:3001")
+const allowedOrigins = (
+  getEnv("API_ALLOWED_ORIGINS") ?? "http://localhost:3001"
+)
   .split(",")
   .map((origin) => origin.trim())
   .filter((origin) => origin.length > 0);
