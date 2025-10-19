@@ -8,7 +8,8 @@
     "moduleResolution": "bundler",
     "outDir": "./dist",
     "paths": {
-      "@/*": ["./*", "../../../packages/db/src/*"]
+      "@/*": ["./*", "../../../packages/db/src/*"],
+      "@orpc/*": ["node_modules/@orpc/*"]
     },
     "rootDir": "./src",
     "skipLibCheck": true,
