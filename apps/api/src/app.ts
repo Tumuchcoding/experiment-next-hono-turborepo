@@ -9,7 +9,9 @@ import { AuthController } from "./orpc/controllers/auth.controller.js";
 
 const app = new Hono();
 
-const allowedOrigins = (Bun.env.API_ALLOWED_ORIGINS ?? "http://localhost:3001")
+const allowedOrigins = (
+  process.env.API_ALLOWED_ORIGINS ?? "http://localhost:3001"
+)
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);

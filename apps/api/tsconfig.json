@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -12,4 +13,24 @@
     "strict": true,
     "target": "ES2022"
   }
+=======
+  "extends": "../../tsconfig.json"
+>>>>>>> 9a3eb802215df42f4fc898736d2ac5807e09f2d8
 }
+// "compilerOptions": {
+//   "baseUrl": "./src",
+//   "composite": true,
+//   "emitDecoratorMetadata": true,
+//   "experimentalDecorators": true,
+//   "module": "ESNext",
+//   "moduleResolution": "bundler",
+//   "outDir": "./dist",
+
+//   "rootDir": "./src",
+//   "skipLibCheck": true,
+//   "strict": true,
+//   "target": "ESNext",
+//   "types": ["node"],
+//   "verbatimModuleSyntax": true
+// },
+// "include": ["./src/*.ts"]
