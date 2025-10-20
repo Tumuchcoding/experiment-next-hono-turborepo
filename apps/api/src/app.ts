@@ -36,13 +36,16 @@ const orpcHono = new ORPCHono({
   producer: implement(contract).$context<AppContext>(),
 });
 
-const router = await orpcHono.applyMiddleware(app, {
-  controllers: [new AuthController(), new AppController()],
-});
+const rpcHandlerPromise = (async () => {
+  const router = await orpcHono.applyMiddleware(app, {
+    controllers: [new AuthController(), new AppController()],
+  });
 
-const rpcHandler = new RPCHandler(router);
+  return new RPCHandler(router);
+})();
 
 app.use("/rpc/*", async (c, next) => {
+  const rpcHandler = await rpcHandlerPromise;
   const { matched, response } = await rpcHandler.handle(c.req.raw, {
     context: { honoContext: c },
     prefix: "/rpc",
