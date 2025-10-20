@@ -15,6 +15,10 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "paths": {
+      "@/*": ["./packages/db/src/*"],
+      "@orpc/*": ["node_modules/@orpc/*"]
+    },
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
