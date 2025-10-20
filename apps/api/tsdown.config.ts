@@ -10,9 +10,9 @@ import { defineConfig } from "tsdown";
  */
 // tsdown.config.ts
 export default defineConfig({
-  clean: true,
+  clean: false,
   dts: true,
   entry: "src/app.ts",
   format: "esm",
-  noExternal: [/^.*$/],
+  noExternal: "db",
 });
