@@ -1,19 +1,33 @@
-import { Controller, Implement, ProcedureExecutionError } from "@outscope/orpc-hono"
-import { hash, verify } from "argon2"
-import { ACCOUNT, PROFILE, USER, and, db, eq } from "db"
-import { z } from "zod"
-import { contract, schemaAuthSigninCredential, schemaAuthSignupCredential, schemaAuthVerify, type AppContext } from "@/orpc/contract"
-import { deleteSession, setSession, verifySession } from "@/utils/session.util"
+import {
+  Controller,
+  Implement,
+  ProcedureExecutionError,
+} from "@outscope/orpc-hono";
+import { hash, verify } from "argon2";
+import { ACCOUNT, and, db, eq, PROFILE, USER } from "db";
+import type { z } from "zod";
+import {
+  deleteSession,
+  setSession,
+  verifySession,
+} from "../../utils/session.util.js";
+import {
+  type AppContext,
+  contract,
+  type schemaAuthSigninCredential,
+  type schemaAuthSignupCredential,
+  type schemaAuthVerify,
+} from "../contract.js";
 
-type SignupInput = z.infer<typeof schemaAuthSignupCredential>
-type SigninInput = z.infer<typeof schemaAuthSigninCredential>
-type VerifyInput = z.infer<typeof schemaAuthVerify>
+type SignupInput = z.infer<typeof schemaAuthSignupCredential>;
+type SigninInput = z.infer<typeof schemaAuthSigninCredential>;
+type VerifyInput = z.infer<typeof schemaAuthVerify>;
 
 function createError(message: string, status: number, code: string) {
   return new ProcedureExecutionError(message, {
     code,
     status,
-  })
+  });
 }
 
 @Controller()
@@ -21,59 +35,63 @@ export class AuthController {
   @Implement(contract.authSignupCredential)
   async signupCredential(input: SignupInput, context: AppContext) {
     try {
-      const { email, name, password } = input
+      const { email, name, password } = input;
 
       const [existingUser] = await db
         .select()
         .from(USER)
         .where(eq(USER.email, email))
-        .limit(1)
+        .limit(1);
 
       if (existingUser) {
-        throw createError("User with this email already exists.", 409, "CONFLICT")
+        throw createError(
+          "User with this email already exists.",
+          409,
+          "CONFLICT"
+        );
       }
 
-      const hashedPassword = await hash(password)
+      const hashedPassword = await hash(password);
 
       await db.transaction(async (transaction) => {
         const [newUser] = await transaction
           .insert(USER)
           .values({ email, name })
-          .returning()
+          .returning();
 
         const account = transaction.insert(ACCOUNT).values({
           password: hashedPassword,
           userId: newUser.id,
-        })
+        });
 
         const profile = transaction.insert(PROFILE).values({
           userId: newUser.id,
-        })
+        });
 
-        await Promise.all([account, profile])
+        await Promise.all([account, profile]);
 
         await setSession({
           context: context.honoContext,
           id: newUser.id,
           now: new Date(),
-        })
-      })
+        });
+      });
 
-      return { success: true }
+      return { success: true };
     } catch (error) {
-      if (error instanceof ProcedureExecutionError) throw error
+      if (error instanceof ProcedureExecutionError) throw error;
       throw createError(
         "An unexpected error occurred. Please try again later.",
         500,
-        "INTERNAL_SERVER_ERROR",
-      )
+        "INTERNAL_SERVER_ERROR"
+      );
     }
   }
 
   @Implement(contract.authSigninCredential)
   async signinCredential(input: SigninInput, context: AppContext) {
     try {
-      const { email, password } = input
+      const { email, password } = input;
 
       const [existingUser] = await db
         .select({
@@ -84,57 +102,61 @@ export class AuthController {
         .from(USER)
         .innerJoin(
           ACCOUNT,
-          and(eq(ACCOUNT.userId, USER.id), eq(ACCOUNT.provider, "credentials")),
+          and(eq(ACCOUNT.userId, USER.id), eq(ACCOUNT.provider, "credentials"))
         )
         .where(eq(USER.email, email))
-        .limit(1)
+        .limit(1);
 
       if (!existingUser) {
-        throw createError("User with this email does not exist.", 401, "UNAUTHORIZED")
+        throw createError(
+          "User with this email does not exist.",
+          401,
+          "UNAUTHORIZED"
+        );
       }
 
-      const hashedPassword = existingUser.hashedPassword ?? ""
-      const isPasswordCorrect = await verify(hashedPassword, password)
+      const hashedPassword = existingUser.hashedPassword ?? "";
+      const isPasswordCorrect = await verify(hashedPassword, password);
 
       if (!isPasswordCorrect) {
-        throw createError("Invalid email or password.", 401, "UNAUTHORIZED")
+        throw createError("Invalid email or password.", 401, "UNAUTHORIZED");
       }
 
       await setSession({
         context: context.honoContext,
         id: existingUser.id,
         now: new Date(),
-      })
+      });
 
-      return { success: true }
+      return { success: true };
     } catch (error) {
-      if (error instanceof ProcedureExecutionError) throw error
+      if (error instanceof ProcedureExecutionError) throw error;
       throw createError(
         "An unexpected error occurred. Please try again later.",
         500,
-        "INTERNAL_SERVER_ERROR",
-      )
+        "INTERNAL_SERVER_ERROR"
+      );
     }
   }
 
   @Implement(contract.authSignoutCredential)
   async signoutCredential(_input: undefined, context: AppContext) {
-    deleteSession(context.honoContext)
-    return { success: true }
+    deleteSession(context.honoContext);
+    return { success: true };
   }
 
   @Implement(contract.authVerify)
   async verify(input: VerifyInput) {
     try {
-      const session = input.session
-      if (!session) return false
+      const session = input.session;
+      if (!session) return false;
 
-      const data = await verifySession(session)
-      if (!data) return false
+      const data = await verifySession(session);
+      if (!data) return false;
 
-      return true
+      return true;
     } catch {
-      return false
+      return false;
     }
   }
 }

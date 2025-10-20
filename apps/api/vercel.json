@@ -1,0 +1,30 @@
+{
+  "installCommand": "bun install",
+  "buildCommand": "bun run build",
+  "builds": [
+    {
+      "src": "dist/vercel-handler.js",
+      "use": "@vercel/node",
+      "config": {
+        "runtime": "nodejs20.x"
+      }
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/rpc",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/rpc",
+      "destination": "/dist/vercel-handler.js"
+    },
+    {
+      "source": "/rpc/(.*)",
+      "destination": "/dist/vercel-handler.js"
+    }
+  ]
+}
