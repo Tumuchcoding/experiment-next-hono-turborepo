@@ -1,5 +1,5 @@
-export { and, eq } from "drizzle-orm"
-export { db } from "@/db"
+export { and, eq } from "drizzle-orm";
+export { db } from "./db.js";
 export {
   ACCOUNT,
   type Account,
@@ -7,4 +7,4 @@ export {
   type Profile,
   USER,
   type User,
-} from "@/schema/user.schema"
+} from "./schema/user.schema.js";

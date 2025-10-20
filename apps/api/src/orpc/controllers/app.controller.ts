@@ -1,5 +1,5 @@
 import { Controller, Implement } from "@outscope/orpc-hono";
-import { db, USER } from "db";
+import { db, USER } from "../../../../../packages/db/src/index.js";
 import { contract } from "../contract.js";
 
 @Controller()

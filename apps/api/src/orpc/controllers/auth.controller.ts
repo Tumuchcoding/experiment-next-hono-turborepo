@@ -4,8 +4,15 @@ import {
   ProcedureExecutionError,
 } from "@outscope/orpc-hono";
 import { hash, verify } from "argon2";
-import { ACCOUNT, and, db, eq, PROFILE, USER } from "db";
 import type { z } from "zod";
+import {
+  ACCOUNT,
+  and,
+  db,
+  eq,
+  PROFILE,
+  USER,
+} from "../../../../../packages/db/src/index.js";
 import {
   deleteSession,
   setSession,
