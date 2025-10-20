@@ -1,22 +1,3 @@
 {
-  "compilerOptions": {
-    "baseUrl": "./src",
-    "composite": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "outDir": "./dist",
-    "paths": {
-      "@/*": ["./*", "../../../packages/db/src/*"],
-      "@orpc/*": ["node_modules/@orpc/*"]
-    },
-    "rootDir": "./src",
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "ESNext",
-    "types": ["node"],
-    "verbatimModuleSyntax": true
-  },
-  "include": ["./src/*.ts"]
+  "extends": "../../tsconfig.json"
 }
