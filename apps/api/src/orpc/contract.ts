@@ -6,34 +6,42 @@ export interface AppContext {
   honoContext: Context
 }
 
+export const OPENAPI_INTERNAL_TAG = "Internal"
+
 export const schemaAuthSignupCredential = z.object({
-  email: z.string().email(),
-  name: z.string().min(1),
-  password: z.string().min(6),
-})
+  email: z.string().email().describe("User email address"),
+  name: z
+    .string()
+    .min(1)
+    .describe("Full name shown on the account"),
+  password: z
+    .string()
+    .min(6)
+    .describe("Password with at least six characters"),
+}).describe("Credentials used to create a new account")
 
 export const schemaAuthSigninCredential = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-})
+  email: z.string().email().describe("Registered email address"),
+  password: z.string().min(6).describe("Account password"),
+}).describe("Credentials used to sign in with email and password")
 
 export const schemaAuthVerify = z.object({
-  session: z.string(),
-})
+  session: z.string().describe("Session token to validate"),
+}).describe("Session verification payload")
 
 const sessionResponseSchema = z.object({
-  success: z.boolean(),
-})
+  success: z.boolean().describe("Whether the operation succeeded"),
+}).describe("Basic success response")
 
 export const userSchema = z.object({
-  createdAt: z.string(),
-  email: z.string().email(),
-  emailVerified: z.boolean(),
-  id: z.number(),
-  name: z.string(),
-  role: z.enum(["admin", "user"]),
-  updatedAt: z.string(),
-})
+  createdAt: z.string().describe("ISO timestamp of creation"),
+  email: z.string().email().describe("User email address"),
+  emailVerified: z.boolean().describe("Whether the email address was verified"),
+  id: z.number().describe("Unique user identifier"),
+  name: z.string().describe("Full name displayed for the user"),
+  role: z.enum(["admin", "user"]).describe("Assigned role within the system"),
+  updatedAt: z.string().describe("ISO timestamp of last update"),
+}).describe("User record returned from the API")
 
 export const contract = {
   authSigninCredential: oc
@@ -67,7 +75,7 @@ export const contract = {
       method: "POST",
       path: "/auth/verify",
       summary: "Verify session token",
-      tags: ["Auth"],
+      tags: ["Auth", OPENAPI_INTERNAL_TAG],
     })
     .input(schemaAuthVerify)
     .output(z.boolean()),
@@ -76,7 +84,7 @@ export const contract = {
       method: "GET",
       path: "/test",
       summary: "Healthcheck",
-      tags: ["System"],
+      tags: ["System", OPENAPI_INTERNAL_TAG],
     })
     .output(z.string()),
   users: oc

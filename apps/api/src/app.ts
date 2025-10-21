@@ -2,9 +2,10 @@ import { OpenAPIGenerator, type OpenAPI } from "@orpc/openapi";
 import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { swaggerUI } from "@hono/swagger-ui";
+import { Scalar, type ApiReferenceConfiguration } from "@scalar/hono-api-reference";
+import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { env } from "./config/env.js";
-import { contract } from "./orpc/contract.js";
+import { OPENAPI_INTERNAL_TAG, contract } from "./orpc/contract.js";
 import { router } from "./orpc/router.js";
 
 const app = new Hono();
@@ -28,13 +29,119 @@ app.use(
   })
 );
 
-const openApiGenerator = new OpenAPIGenerator();
+const openApiGenerator = new OpenAPIGenerator({
+  schemaConverters: [new ZodToJsonSchemaConverter()],
+});
 let openApiDocument: OpenAPI.Document | null = null;
 const rpcServerUrl = `${env.apiBaseUrl.replace(/\/$/, "")}/rpc`;
+const HTTP_METHODS = [
+  "get",
+  "put",
+  "post",
+  "delete",
+  "options",
+  "head",
+  "patch",
+  "trace",
+] as const;
+
+type HttpMethodKey = Extract<(typeof HTTP_METHODS)[number], keyof OpenAPI.PathItemObject>;
+
+const isHttpMethod = (value: string): value is HttpMethodKey =>
+  (HTTP_METHODS as readonly string[]).includes(value);
+
+const operationExamples: Partial<
+  Record<string, Partial<Record<HttpMethodKey, unknown>>>
+> = {
+  "/auth/signin/credential": {
+    post: {
+      email: "demo@example.com",
+      password: "password123",
+    },
+  },
+  "/auth/signup/credential": {
+    post: {
+      email: "demo@example.com",
+      name: "Demo User",
+      password: "password123",
+    },
+  },
+};
+
+const sanitizeOpenApiDocument = (doc: OpenAPI.Document) => {
+  if (!doc.paths) return doc;
+
+  for (const [path, pathItem] of Object.entries(doc.paths)) {
+    if (!pathItem) continue;
+
+    let hasExternalOperations = false;
+
+    for (const key of Object.keys(pathItem)) {
+      if (!isHttpMethod(key)) continue;
+
+      const method = key as HttpMethodKey;
+      const candidate = pathItem[method];
+      if (!candidate || typeof candidate === "string") continue;
+
+      const operation = candidate as OpenAPI.OperationObject;
+      const tags = Array.isArray(operation.tags) ? operation.tags : [];
+
+      if (tags.includes(OPENAPI_INTERNAL_TAG)) {
+        delete pathItem[method];
+        continue;
+      }
+
+      hasExternalOperations = true;
+    }
+
+    if (!hasExternalOperations) {
+      delete doc.paths[path];
+    }
+  }
+
+  if (Array.isArray(doc.tags)) {
+    doc.tags = doc.tags.filter((tag) => tag.name !== OPENAPI_INTERNAL_TAG);
+  }
+
+  return doc;
+};
+
+const applyOperationExamples = (doc: OpenAPI.Document) => {
+  if (!doc.paths) return doc;
+
+  for (const [path, methods] of Object.entries(operationExamples)) {
+    if (!methods) continue;
+    const pathItem = doc.paths[path];
+    if (!pathItem) continue;
+
+    for (const [methodKey, example] of Object.entries(methods)) {
+      if (!isHttpMethod(methodKey) || example === undefined) continue;
+
+      const method = methodKey as HttpMethodKey;
+      const operationCandidate = pathItem[method];
+      if (!operationCandidate || typeof operationCandidate === "string") continue;
+
+      const operation = operationCandidate as OpenAPI.OperationObject;
+      const requestBody = operation.requestBody;
+      if (!requestBody || typeof requestBody === "string" || "$ref" in requestBody) {
+        continue;
+      }
+
+      const jsonContent = requestBody.content?.["application/json"];
+      if (!jsonContent) continue;
+
+      if (jsonContent.example === undefined && jsonContent.examples === undefined) {
+        jsonContent.example = example;
+      }
+    }
+  }
+
+  return doc;
+};
 
 const getOpenApiDocument = async () => {
   if (!openApiDocument) {
-    openApiDocument = await openApiGenerator.generate(contract, {
+    const document = await openApiGenerator.generate(contract, {
       info: {
         title: "Experiment API",
         version: "1.0.0",
@@ -42,6 +149,8 @@ const getOpenApiDocument = async () => {
       },
       servers: [{ url: rpcServerUrl }],
     });
+
+    openApiDocument = applyOperationExamples(sanitizeOpenApiDocument(document));
   }
 
   return openApiDocument;
@@ -50,9 +159,14 @@ const getOpenApiDocument = async () => {
 app.get("/openapi.json", async (c) => c.json(await getOpenApiDocument()));
 app.get(
   "/docs",
-  swaggerUI({
-    url: "/openapi.json",
-  })
+  Scalar(() => ({
+    spec: {
+      url: "/openapi.json",
+    },
+    meta: {
+      title: "Experiment API Reference",
+    },
+  }) as Partial<ApiReferenceConfiguration>)
 );
 
 const rpcHandler = new RPCHandler(router);

@@ -9,10 +9,11 @@
     "start": "bun run dev"
   },
   "dependencies": {
-    "@hono/swagger-ui": "^0.5.2",
     "@orpc/contract": "^1.9.4",
     "@orpc/openapi": "^1.10.0",
     "@orpc/server": "^1.9.4",
+    "@orpc/zod": "^1.10.0",
+    "@scalar/hono-api-reference": "^0.9.22",
     "argon2": "^0.44.0",
     "db": "workspace:*",
     "hono": "^4.9.9",
