@@ -1,6 +1,6 @@
 import { ORPCError, implement } from "@orpc/server";
 import { hash, verify } from "argon2";
-import { ACCOUNT, PROFILE, USER, and, db, eq } from "../../../../packages/db/src/index.js";
+import { ACCOUNT, PROFILE, USER, and, db, eq } from "db";
 import {
   deleteSession,
   setSession,
