@@ -3,6 +3,7 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { Scalar, type ApiReferenceConfiguration } from "@scalar/hono-api-reference";
+import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { env } from "./config/env.js";
 import { OPENAPI_INTERNAL_TAG, contract } from "./orpc/contract.js";
@@ -33,7 +34,9 @@ const openApiGenerator = new OpenAPIGenerator({
   schemaConverters: [new ZodToJsonSchemaConverter()],
 });
 let openApiDocument: OpenAPI.Document | null = null;
-const rpcServerUrl = `${env.apiBaseUrl.replace(/\/$/, "")}/rpc`;
+const normalizedBaseUrl = env.apiBaseUrl.replace(/\/$/, "");
+const rpcServerUrl = `${normalizedBaseUrl}/rpc`;
+const openApiServerUrl = `${normalizedBaseUrl}/openapi`;
 const HTTP_METHODS = [
   "get",
   "put",
@@ -139,6 +142,13 @@ const applyOperationExamples = (doc: OpenAPI.Document) => {
   return doc;
 };
 
+const openApiHttpHandler = new OpenAPIHandler(router, {
+  filter: ({ contract }) => {
+    const tags = contract?.["~orpc"]?.route?.tags;
+    return !Array.isArray(tags) || !tags.includes(OPENAPI_INTERNAL_TAG);
+  },
+});
+
 const getOpenApiDocument = async () => {
   if (!openApiDocument) {
     const document = await openApiGenerator.generate(contract, {
@@ -147,7 +157,10 @@ const getOpenApiDocument = async () => {
         version: "1.0.0",
         description: "OpenAPI specification generated from the oRPC contract",
       },
-      servers: [{ url: rpcServerUrl }],
+      servers: [
+        { url: openApiServerUrl, description: "REST bridge" },
+        { url: rpcServerUrl, description: "oRPC transport" },
+      ],
     });
 
     openApiDocument = applyOperationExamples(sanitizeOpenApiDocument(document));
@@ -163,6 +176,8 @@ app.get(
     spec: {
       url: "/openapi.json",
     },
+    layout: "modern",
+    hideDownloadButton: true,
     meta: {
       title: "Experiment API Reference",
     },
@@ -175,6 +190,19 @@ app.use("/rpc/*", async (c, next) => {
   const { matched, response } = await rpcHandler.handle(c.req.raw, {
     context: { honoContext: c },
     prefix: "/rpc",
+  });
+
+  if (matched) {
+    return c.newResponse(response.body, response);
+  }
+
+  return next();
+});
+
+app.use("/openapi/*", async (c, next) => {
+  const { matched, response } = await openApiHttpHandler.handle(c.req.raw, {
+    context: { honoContext: c },
+    prefix: "/openapi",
   });
 
   if (matched) {
