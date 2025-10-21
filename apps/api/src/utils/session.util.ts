@@ -2,7 +2,7 @@ import type { Context } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { sign, verify } from "hono/jwt";
 import type { JWTPayload } from "hono/utils/jwt/types";
-import { env } from "@/config/env";
+import { env } from "../config/env.js";
 import { JWT_SECRET } from "./constant.util.js";
 
 export const EXPIRATION_TIME_IN_MILLISECONDS = 31_536_000_000; // 1 year
@@ -17,7 +17,8 @@ const sessionCookieOptions = {
   httpOnly: true,
   path: "/",
   priority: "medium" as const,
-  sameSite: (env.sessionCookie.sameSite ?? DEFAULT_SAME_SITE) as SameSiteSetting,
+  sameSite: (env.sessionCookie.sameSite ??
+    DEFAULT_SAME_SITE) as SameSiteSetting,
   secure: env.sessionCookie.secure,
 };
 
