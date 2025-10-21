@@ -8,6 +8,15 @@ export interface AppContext {
 
 export const OPENAPI_INTERNAL_TAG = "Internal"
 
+export const schemaUserIdParam = z.object({
+  userId: z
+    .coerce
+    .number()
+    .int()
+    .positive()
+    .describe("Numeric user identifier"),
+});
+
 export const schemaAuthSignupCredential = z.object({
   email: z.string().email().describe("User email address"),
   name: z
@@ -95,6 +104,22 @@ export const contract = {
       tags: ["Users"],
     })
     .output(z.array(userSchema)),
+  userById: oc
+    .route({
+      method: "GET",
+      path: "/users/{userId}",
+      summary: "Get a user by id",
+      tags: ["Users"],
+      inputStructure: "detailed",
+    })
+    .input(
+      z
+        .object({
+          params: schemaUserIdParam,
+        })
+        .describe("Route params used to locate the user")
+    )
+    .output(userSchema),
 }
 
 export type AppContract = typeof contract
