@@ -1,7 +1,22 @@
 {
   "name": "db",
-  "exports": "./src/index.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "prepare": "bun run build",
+    "build": "tsc -p tsconfig.build.json",
     "check:type": "tsc",
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
     "db:introspect": "drizzle-kit introspect --config=drizzle.config.ts",
