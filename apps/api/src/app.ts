@@ -1,11 +1,7 @@
-import "reflect-metadata";
 import { RPCHandler } from "@orpc/server/fetch";
-import { implement, ORPCHono } from "@outscope/orpc-hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { type AppContext, contract } from "./orpc/contract.js";
-import { AppController } from "./orpc/controllers/app.controller.js";
-import { AuthController } from "./orpc/controllers/auth.controller.js";
+import { router } from "./orpc/router.js";
 
 const app = new Hono();
 
@@ -31,21 +27,9 @@ app.use(
   })
 );
 
-const orpcHono = new ORPCHono({
-  contract,
-  producer: implement(contract).$context<AppContext>(),
-});
-
-const rpcHandlerPromise = (async () => {
-  const router = await orpcHono.applyMiddleware(app, {
-    controllers: [new AuthController(), new AppController()],
-  });
-
-  return new RPCHandler(router);
-})();
+const rpcHandler = new RPCHandler(router);
 
 app.use("/rpc/*", async (c, next) => {
-  const rpcHandler = await rpcHandlerPromise;
   const { matched, response } = await rpcHandler.handle(c.req.raw, {
     context: { honoContext: c },
     prefix: "/rpc",

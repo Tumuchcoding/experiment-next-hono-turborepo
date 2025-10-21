@@ -1,48 +1,28 @@
-import {
-  Controller,
-  Implement,
-  ProcedureExecutionError,
-} from "@outscope/orpc-hono";
+import { ORPCError, implement } from "@orpc/server";
 import { hash, verify } from "argon2";
-import type { z } from "zod";
-import {
-  ACCOUNT,
-  and,
-  db,
-  eq,
-  PROFILE,
-  USER,
-} from "../../../../../packages/db/src/index.js";
+import { ACCOUNT, PROFILE, USER, and, db, eq } from "../../../../packages/db/src/index.js";
 import {
   deleteSession,
   setSession,
   verifySession,
-} from "../../utils/session.util.js";
+} from "../utils/session.util.js";
 import {
   type AppContext,
   contract,
-  type schemaAuthSigninCredential,
-  type schemaAuthSignupCredential,
-  type schemaAuthVerify,
-} from "../contract.js";
+  schemaAuthSigninCredential,
+  schemaAuthSignupCredential,
+  schemaAuthVerify,
+} from "./contract.js";
 
-type SignupInput = z.infer<typeof schemaAuthSignupCredential>;
-type SigninInput = z.infer<typeof schemaAuthSigninCredential>;
-type VerifyInput = z.infer<typeof schemaAuthVerify>;
+const implementer = implement(contract).$context<AppContext>();
 
-function createError(message: string, status: number, code: string) {
-  return new ProcedureExecutionError(message, {
-    code,
-    status,
-  });
-}
+const createError = (message: string, status: number, code: string) =>
+  new ORPCError(code, { message, status });
 
-@Controller()
-export class AuthController {
-  @Implement(contract.authSignupCredential)
-  async signupCredential(input: SignupInput, context: AppContext) {
+const authSignupCredential = implementer.authSignupCredential.handler(
+  async ({ input, context }) => {
     try {
-      const { email, name, password } = input;
+      const { email, name, password } = schemaAuthSignupCredential.parse(input);
 
       const [existingUser] = await db
         .select()
@@ -86,7 +66,7 @@ export class AuthController {
 
       return { success: true };
     } catch (error) {
-      if (error instanceof ProcedureExecutionError) throw error;
+      if (error instanceof ORPCError) throw error;
       throw createError(
         "An unexpected error occurred. Please try again later.",
         500,
@@ -94,11 +74,12 @@ export class AuthController {
       );
     }
   }
+);
 
-  @Implement(contract.authSigninCredential)
-  async signinCredential(input: SigninInput, context: AppContext) {
+const authSigninCredential = implementer.authSigninCredential.handler(
+  async ({ input, context }) => {
     try {
-      const { email, password } = input;
+      const { email, password } = schemaAuthSigninCredential.parse(input);
 
       const [existingUser] = await db
         .select({
@@ -137,7 +118,7 @@ export class AuthController {
 
       return { success: true };
     } catch (error) {
-      if (error instanceof ProcedureExecutionError) throw error;
+      if (error instanceof ORPCError) throw error;
       throw createError(
         "An unexpected error occurred. Please try again later.",
         500,
@@ -145,25 +126,41 @@ export class AuthController {
       );
     }
   }
+);
 
-  @Implement(contract.authSignoutCredential)
-  async signoutCredential(_input: undefined, context: AppContext) {
+const authSignoutCredential = implementer.authSignoutCredential.handler(
+  async ({ context }) => {
     deleteSession(context.honoContext);
     return { success: true };
   }
+);
 
-  @Implement(contract.authVerify)
-  async verify(input: VerifyInput) {
-    try {
-      const session = input.session;
-      if (!session) return false;
+const authVerify = implementer.authVerify.handler(async ({ input }) => {
+  try {
+    const { session } = schemaAuthVerify.parse(input);
+    if (!session) return false;
 
-      const data = await verifySession(session);
-      if (!data) return false;
+    const data = await verifySession(session);
+    if (!data) return false;
 
-      return true;
-    } catch {
-      return false;
-    }
+    return true;
+  } catch {
+    return false;
   }
-}
+});
+
+const test = implementer.test.handler(async () => "Hello Hono!");
+
+const users = implementer.users.handler(async () => {
+  const usersResult = await db.select().from(USER);
+  return usersResult;
+});
+
+export const router = implementer.router({
+  authSignupCredential,
+  authSigninCredential,
+  authSignoutCredential,
+  authVerify,
+  test,
+  users,
+});
