@@ -1,7 +1,10 @@
+import { OpenAPIGenerator, type OpenAPI } from "@orpc/openapi";
 import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { swaggerUI } from "@hono/swagger-ui";
 import { env } from "./config/env.js";
+import { contract } from "./orpc/contract.js";
 import { router } from "./orpc/router.js";
 
 const app = new Hono();
@@ -22,6 +25,32 @@ app.use(
       if (!origin) return defaultOrigin;
       return allowedOrigins.includes(origin) ? origin : defaultOrigin;
     },
+  })
+);
+
+const openApiGenerator = new OpenAPIGenerator();
+let openApiDocument: OpenAPI.Document | null = null;
+
+const getOpenApiDocument = async () => {
+  if (!openApiDocument) {
+    openApiDocument = await openApiGenerator.generate(contract, {
+      info: {
+        title: "Experiment API",
+        version: "1.0.0",
+        description: "OpenAPI specification generated from the oRPC contract",
+      },
+      servers: [{ url: "http://localhost:3002/rpc" }],
+    });
+  }
+
+  return openApiDocument;
+};
+
+app.get("/openapi.json", async (c) => c.json(await getOpenApiDocument()));
+app.get(
+  "/docs",
+  swaggerUI({
+    url: "/openapi.json",
   })
 );
 
