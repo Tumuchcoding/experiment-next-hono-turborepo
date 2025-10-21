@@ -30,6 +30,7 @@ app.use(
 
 const openApiGenerator = new OpenAPIGenerator();
 let openApiDocument: OpenAPI.Document | null = null;
+const rpcServerUrl = `${env.apiBaseUrl.replace(/\/$/, "")}/rpc`;
 
 const getOpenApiDocument = async () => {
   if (!openApiDocument) {
@@ -39,7 +40,7 @@ const getOpenApiDocument = async () => {
         version: "1.0.0",
         description: "OpenAPI specification generated from the oRPC contract",
       },
-      servers: [{ url: "http://localhost:3002/rpc" }],
+      servers: [{ url: rpcServerUrl }],
     });
   }
 
