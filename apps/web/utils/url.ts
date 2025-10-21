@@ -1,7 +1,13 @@
+const normalizeBase = (value: string | undefined, fallback: string) => {
+  const normalized = (value ?? fallback).trim();
+  if (normalized === "/" || normalized === "") return "";
+  return normalized.endsWith("/") ? normalized.slice(0, -1) : normalized;
+};
+
 export const BASE_URL = {
-  API: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3002",
-  WEB: process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3001",
-}
+  API: normalizeBase(process.env.NEXT_PUBLIC_API_URL, "/api"),
+  WEB: normalizeBase(process.env.NEXT_PUBLIC_WEB_URL, "http://localhost:3001"),
+};
 
 export const API = {
   AUTH: {

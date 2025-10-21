@@ -1,18 +1,20 @@
-import type { NextConfig } from "next"
+import type { NextConfig } from "next";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+const apiProxyTarget = (
+  process.env.API_PROXY_TARGET ?? "http://localhost:3002"
+).replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
   async rewrites() {
     return [
       {
-        destination: `${API_URL}/:path*`,
+        destination: `${apiProxyTarget}/:path*`,
         source: "/api/:path*",
       },
-    ]
+    ];
   },
   typedRoutes: true,
-}
+};
 
-export default nextConfig
+export default nextConfig;
