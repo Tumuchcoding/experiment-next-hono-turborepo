@@ -1,15 +1,12 @@
 import type { NextConfig } from "next";
-
-const apiProxyTarget = (
-  process.env.API_PROXY_TARGET ?? "http://localhost:3002"
-).replace(/\/$/, "");
+import { env } from "@/config/env";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
   async rewrites() {
     return [
       {
-        destination: `${apiProxyTarget}/:path*`,
+        destination: `${env.apiProxyTarget}/:path*`,
         source: "/api/:path*",
       },
     ];

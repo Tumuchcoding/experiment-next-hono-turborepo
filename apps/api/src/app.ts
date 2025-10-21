@@ -1,18 +1,16 @@
 import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { env } from "@/config/env";
 import { router } from "./orpc/router.js";
 
 const app = new Hono();
 
-const allowedOrigins = (
-  process.env.API_ALLOWED_ORIGINS ?? "http://localhost:3001"
-)
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = env.allowedOrigins.length
+  ? env.allowedOrigins
+  : ["http://localhost:3001"];
 
-const defaultOrigin = allowedOrigins[0] ?? "http://localhost:3001";
+const defaultOrigin = allowedOrigins[0];
 
 app.use(
   "*",

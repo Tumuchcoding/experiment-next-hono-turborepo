@@ -2,6 +2,7 @@ import type { Context } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { sign, verify } from "hono/jwt";
 import type { JWTPayload } from "hono/utils/jwt/types";
+import { env } from "@/config/env";
 import { JWT_SECRET } from "./constant.util.js";
 
 export const EXPIRATION_TIME_IN_MILLISECONDS = 31_536_000_000; // 1 year
@@ -9,47 +10,18 @@ export const JWT_ALGORITHM = "HS256";
 
 type SameSiteSetting = "lax" | "strict" | "none";
 
-const NODE_ENV = process.env.NODE_ENV ?? "development";
-const COOKIE_DOMAIN = process.env.SESSION_COOKIE_DOMAIN?.trim();
+const DEFAULT_SAME_SITE: SameSiteSetting = env.isProduction ? "none" : "lax";
 
-const COOKIE_SECURE =
-  process.env.SESSION_COOKIE_SECURE !== undefined
-    ? process.env.SESSION_COOKIE_SECURE === "true"
-    : NODE_ENV === "production";
+const sessionCookieOptions = {
+  domain: env.sessionCookie.domain,
+  httpOnly: true,
+  path: "/",
+  priority: "medium" as const,
+  sameSite: (env.sessionCookie.sameSite ?? DEFAULT_SAME_SITE) as SameSiteSetting,
+  secure: env.sessionCookie.secure,
+};
 
-const COOKIE_SAME_SITE = normalizeSameSite(
-  process.env.SESSION_COOKIE_SAMESITE,
-  NODE_ENV === "production" ? "none" : "lax"
-);
-
-function normalizeSameSite(
-  value: string | undefined,
-  fallback: SameSiteSetting
-): SameSiteSetting {
-  const lowered = value?.toLowerCase();
-
-  switch (lowered) {
-    case "strict":
-      return "strict";
-    case "lax":
-      return "lax";
-    case "none":
-      return "none";
-    default:
-      return fallback;
-  }
-}
-
-function getCookieOptions() {
-  return {
-    domain: COOKIE_DOMAIN || undefined,
-    httpOnly: true,
-    path: "/",
-    priority: "medium" as const,
-    sameSite: COOKIE_SAME_SITE,
-    secure: COOKIE_SECURE,
-  };
-}
+const getCookieOptions = () => sessionCookieOptions;
 
 export function deleteSession(context: Context): void {
   deleteCookie(context, "session", getCookieOptions());

@@ -1,19 +1,13 @@
-const normalizeBase = (value: string | undefined, fallback: string) => {
-  const normalized = (value ?? fallback).trim();
-  if (normalized === "" || normalized === "/") return "";
-  return normalized.endsWith("/") ? normalized.slice(0, -1) : normalized;
-};
+import { env, isAbsoluteUrl } from "@/config/env";
 
 const ensureLeadingSlash = (value: string) => {
   if (!value) return "";
   return value.startsWith("/") ? value : `/${value}`;
 };
 
-const isAbsoluteUrl = (value: string) => /^https?:\/\//i.test(value);
-
 export const BASE_URL = {
-  API: normalizeBase(process.env.NEXT_PUBLIC_API_URL, "/api"),
-  WEB: normalizeBase(process.env.NEXT_PUBLIC_WEB_URL, "http://localhost:3001"),
+  API: env.apiBase === "/" ? "" : env.apiBase,
+  WEB: env.webBase,
 };
 
 const getWebOrigin = () => {
