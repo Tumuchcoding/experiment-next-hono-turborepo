@@ -1,11 +1,11 @@
 import { ORPCError } from "@orpc/server";
 import { hash, verify } from "argon2";
-import { ACCOUNT, PROFILE, USER, and, db, eq } from "db";
+import { ACCOUNT, and, db, eq, PROFILE, USER } from "db";
 import {
   deleteSession,
   setSession,
   verifySession,
-} from "@/utils/session.util.js";
+} from "../utils/session.util.js";
 import {
   schemaAuthSigninCredential,
   schemaAuthSignupCredential,
@@ -147,8 +147,8 @@ const authVerify = implementer.authVerify.handler(async ({ input }) => {
 });
 
 export const authHandlers = {
-  authSignupCredential,
   authSigninCredential,
   authSignoutCredential,
+  authSignupCredential,
   authVerify,
 };
