@@ -1,7 +1,7 @@
 import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { env } from "@/config/env";
+import { env } from "./config/env.js";
 import { router } from "./orpc/router.js";
 
 const app = new Hono();
